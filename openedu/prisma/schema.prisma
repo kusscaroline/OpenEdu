@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String     @id @default(uuid())
+  email String  @unique
+  password  String
+  firstName  String
+  lastName  String
+  role String @default("user")
+
+  classes Class[]
+  moduleSubmissions UserModuleSubmission[]
+  contributingClasses ClassContributor[]
+  contributingCourses CourseContributor[]
+}
+
+model Class {
+  id    String     @id @default(uuid()) @unique
+  students User[]
+  contributors ClassContributor[]
+}
+
+model ClassContributor {
+  id    String     @id @default(uuid()) @unique
+  classId String
+  userId String
+  
+  class   Class @relation(fields: [classId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model Course {
+  id    String     @id @default(uuid()) @unique
+  name String
+  description String
+  
+  contributors CourseContributor[]
+  categories CourseCategory[]
+  assignments Assignment[]
+}
+
+model CourseContributor {
+  id    String     @id @default(uuid()) @unique
+  courseId String
+  userId String
+  
+  course   Course @relation(fields: [courseId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model CourseCategory {
+  id    String     @id @default(uuid()) @unique
+  name String
+  courseId String
+
+  course   Course @relation(fields: [courseId], references: [id])
+}
+
+model Assignment {
+  id    String     @id @default(uuid()) @unique
+  name String
+  courseId String
+  type String // Lesson or Exam
+
+  modules Module[]
+  course   Course @relation(fields: [courseId], references: [id])
+}
+
+model Module {
+  id    String     @id @default(uuid()) @unique
+  assignmentId String
+  name String
+  type String // Video / Text / Quiz / Test / Graded Upload / Discussion / etc
+  data String
+
+  submissions UserModuleSubmission[]
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+}
+
+
+model UserModuleSubmission {
+  id    String     @id @default(uuid()) @unique
+  userId String
+  moduleId String
+  data String
+
+  user   User @relation(fields: [userId], references: [id])
+  module   Module @relation(fields: [moduleId], references: [id])
+}
