@@ -7,7 +7,9 @@ import { Typography } from "@mui/material";
 import SortableAssignment from './sortableAssignment'
 
 export default function Course({
-    courseId
+    courseId,
+    topContent,
+    mode='edit'
 }){
     const { getCourse } = useCourses(),
         [course, setCourse] = useState(null)
@@ -31,9 +33,9 @@ export default function Course({
 
     return (
         <>
-            <h1>{course?.name}</h1>
-            <Typography variant='subtitle1' color='text.secondary' gutterBottom>
-            ID: {course?.id}
+            {topContent && topContent({ course })}
+            <Typography variant='subtitle1' color='text.secondary' sx={{ mb: 5}}>
+                {course.id}
             </Typography>
             <DndContext 
                 collisionDetection={closestCenter}
@@ -46,6 +48,7 @@ export default function Course({
                 >
                 {course.assignments.map(assignment => (
                     <SortableAssignment 
+                        mode={mode}
                         assignment={assignment}
                         key={assignment.id} 
                         id={assignment.id} 

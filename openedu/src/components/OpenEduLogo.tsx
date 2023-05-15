@@ -1,10 +1,12 @@
-
+import { useTheme } from "@mui/material"
 
 export default function OpenEduLogo({ 
-    color = '#FFF', 
     width = 24, 
     height = 24 
 }){
+    const theme = useTheme()
+    const color = theme.palette.text.primary
+
     return (
         <svg 
             width={width}

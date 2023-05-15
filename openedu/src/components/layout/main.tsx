@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Drawer from '@mui/material/Drawer'
 import CssBaseline from '@mui/material/CssBaseline'
 import Box from '@mui/material/Box';
@@ -19,6 +19,7 @@ import { SvgIconProps } from '@mui/material/SvgIcon';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { SettingsContext } from '@/components/contexts/settingsContext'
 
 import BookIcon from '@mui/icons-material/Book';
 import PeopleIcon from '@mui/icons-material/People';
@@ -39,6 +40,8 @@ export default function Main({
     children 
 }) {
     const { data: session } = useSession()
+    const { appSettings, setAppSettings } = useContext(SettingsContext)
+    const [theme, setTheme] = useState('dark')
 
     const currentPage = usePathname()
     
@@ -76,7 +79,11 @@ export default function Main({
         palette: {
             text: {
                 primary: '#000'
-            }
+            },
+            background: {
+                default: "#E7EBF0",
+                paper: '#FFF',
+            },
         },
     });
 
@@ -94,6 +101,19 @@ export default function Main({
         },
     });
 
+    useEffect(() => {
+        let nextTheme = 'dark'
+        if(appSettings.theme == 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) nextTheme = 'dark'
+        else if(appSettings.theme == 'system') nextTheme = 'light'
+        else nextTheme = appSettings.theme
+        setTheme(nextTheme)
+    }, [appSettings])
+
+    useEffect(() => {
+        //alert(theme)
+    }, [theme])
+
+
     if(!session) return (
         <ThemeProvider theme={darkTheme}>
             <Box sx={{ display: 'flex' }}>
@@ -103,7 +123,7 @@ export default function Main({
     )
 
     return (
-        <ThemeProvider theme={darkTheme}>
+        <ThemeProvider theme={theme  == 'dark' ? darkTheme : lightTheme}>
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
                 <AppBar
@@ -120,7 +140,7 @@ export default function Main({
                     elevation={0}
                     variant="outlined"
                 >
-                    <Toolbar>
+                    <Toolbar  sx={{ bgcolor: 'background.paper' }}>
                     </Toolbar>
                 </AppBar>
                 <Drawer

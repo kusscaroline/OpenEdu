@@ -6,7 +6,18 @@ import { useEffect } from 'react'
 import Main from '@/components/layout/main'
 import Link from 'next/link'
 import Button from '@mui/material/Button';
-import { Container, Typography, Card, CardContent, CardMedia, CardActionArea, CardActions, Grid, Stack, Chip } from '@mui/material'
+import { 
+  Container, 
+  Typography, 
+  Card, 
+  CardContent, 
+  CardMedia, 
+  CardActionArea, 
+  CardActions, 
+  Grid, 
+  Stack, 
+  Chip
+} from '@mui/material'
 import { PageHeading } from '@/components/headings'
 
 
@@ -16,7 +27,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function Courses() {
   const { data: session } = useSession(),
-    { courses, getCourses } = useCourses()
+    { courses, getCourses, pages, page } = useCourses()
 
   useEffect(() => {
     getCourses()
@@ -55,6 +66,10 @@ export default function Courses() {
             </Grid>
           ))}
         </Grid>
+        
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>
+            Page {page} of {pages}
+        </Typography>
       </Container>
     </Main>
   )

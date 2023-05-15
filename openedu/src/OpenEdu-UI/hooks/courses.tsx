@@ -52,6 +52,8 @@ function useCourses(props?: useCoursesProps){
     const [courses, setCourses] = useState([] as Course[]),
         [course, setCourse] = useState(null as Course | null),
         [pageNumber, setPageRaw] = useState(0),
+        [pages, setPages] = useState(0),
+        [pageSize, setPageSize] = useState(0),
         context = useContext(OpenEduContext)
 
     const getCourse = ({
@@ -90,8 +92,10 @@ function useCourses(props?: useCoursesProps){
             })
             .then(r => r.json())
             .then(r => {
-                const courses = r as Course[];
+                const courses = r.courses as Course[];
                 setCourses(courses)
+                setPages(r.pages as number)
+                setPageSize(r.pageSize as number)
                 res(courses)
             })
         })
@@ -105,7 +109,7 @@ function useCourses(props?: useCoursesProps){
     const nextPage = () => setPage(pageNumber + 1);
     const lastPage = () => setPage(Math.max(pageNumber - 1, 1));
 
-    return { courses, course, getCourses, getCourse, nextPage, lastPage }
+    return { courses, course, getCourses, getCourse, nextPage, lastPage, pages, pageSize, page: pageNumber + 1 }
 }
 
 interface useCoursesProps {

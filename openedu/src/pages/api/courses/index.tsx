@@ -42,12 +42,12 @@ const GetCourses = async (req: CourseRequest, res: NextApiResponse) => {
     if(!user) return res.status(401);
     
     const page = Math.max((req.query.page || 1), 1) - 1,
-        pageSize = 10
+        pageSize = 6
 
     const courses = await prisma.course.findMany({
         skip: page * 10,
         take: pageSize,
-        orderBy: { name: 'asc' },
+        orderBy: { name: 'desc' },
         include: {
             categories: true
         },
@@ -66,7 +66,27 @@ const GetCourses = async (req: CourseRequest, res: NextApiResponse) => {
         }
     })
 
-    return res.status(200).json(courses)
+    const totalCourses = await prisma.course.count({
+        where: {
+            OR: [
+                { // if user is a contributor to the course
+                    contributors: {
+                        every: {
+                            userId: user.id
+                        }
+                    }
+                }
+                // if user is a member of the course
+                // if user has access to course via a class
+            ]
+        }
+    })
+
+    return res.status(200).json({
+        courses: courses,
+        pageSize,
+        pages: Math.round(totalCourses / pageSize)
+    })
 }
 
 const CreateCourse = async (req: CourseRequest, res: NextApiResponse) => {

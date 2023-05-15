@@ -4,11 +4,13 @@ import { useSession, signIn, signOut } from "next-auth/react"
 import ImageDepthMap from '../../../components/depth-map/ImageDepthMap'
 import { useEffect } from 'react'
 import Main from '@/components/layout/main'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import Button from '@mui/material/Button';
-import { Container, Typography } from '@mui/material'
+import { Container, Typography, Breadcrumbs, Link } from '@mui/material'
 import { PageHeading } from '@/components/headings'
 import { useRouter } from 'next/router';
+
+import NavigateNextIcon from '@mui/icons-material'
 
 import Course from '@/OpenEdu-UI/course'
 
@@ -23,7 +25,33 @@ export default function CourseDetails() {
   return (
     <Main>
       <Container>
-        <Course courseId={router.query.id} />
+        <Course 
+          mode='edit'
+          topContent={({course}) => (
+            <>
+              <Breadcrumbs aria-label="breadcrumb">
+                <NextLink href='/admin/courses'>
+                  <Link 
+                    underline="hover"
+                    color="inherit"
+                  >
+                    Courses
+                  </Link>
+                </NextLink>
+                <NextLink href={'/admin/course/' + course.id}>
+                  <Link 
+                    underline="hover"
+                    color="inherit"
+                  >
+                    {course.name}
+                  </Link>
+                </NextLink>
+              </Breadcrumbs>
+            <PageHeading>{course.name}</PageHeading>
+          </>
+          )}
+          courseId={router.query.id} 
+        />
       </Container>
     </Main>
   )
